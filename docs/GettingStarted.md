@@ -3,7 +3,7 @@
 This page is dedicated to helping you get started on your way to making the
 next great Discord bot or client with DiscordGo. Once you've done that please
 don't forget to submit it to the 
-[Awesome DiscordGo](https://github.com/bwmarrin/discordgo/wiki/Awesome-DiscordGo) list :).
+[Awesome DiscordGo](https://github.com/Bios-Marcel/discordgo/wiki/Awesome-DiscordGo) list :).
 
 
 **First, lets cover a few topics so you can make the best choices on how to 
@@ -17,7 +17,7 @@ master branch or the bleeding edge development branch.**
 * The **master** branch represents the latest released version of DiscordGo. This
 branch will always have a stable and tested version of the library. Each 
 release is tagged and you can easily download a specific release and view the 
-release notes on the github [releases](https://github.com/bwmarrin/discordgo/releases) 
+release notes on the github [releases](https://github.com/Bios-Marcel/discordgo/releases) 
 page.
 
 * The **develop** branch is where all development happens and almost always has
@@ -115,13 +115,13 @@ always pull the latest released version from the master branch. Then run
 Run go get to download the package to your GOPATH/src folder.
 
 ```sh
-go get github.com/bwmarrin/discordgo
+go get github.com/Bios-Marcel/discordgo
 ```
 
 If you want to use the develop branch, follow these steps next.
 
 ```sh
-cd $GOPATH/src/github.com/bwmarrin/discordgo
+cd $GOPATH/src/github.com/Bios-Marcel/discordgo
 git checkout develop
 ```
 
@@ -130,7 +130,7 @@ absolutely required but doing this will allow the Go plugin for your editor to
 provide autocomplete for all DiscordGo functions.
 
 ```sh
-cd $GOPATH/src/github.com/bwmarrin/discordgo
+cd $GOPATH/src/github.com/Bios-Marcel/discordgo
 go install
 ```
 

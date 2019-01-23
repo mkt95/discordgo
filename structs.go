@@ -1,5 +1,5 @@
 // Discordgo - Discord bindings for Go
-// Available at https://github.com/bwmarrin/discordgo
+// Available at https://github.com/Bios-Marcel/discordgo
 
 // Copyright 2015-2016 Bruce Marriner <bruce@sqls.net>.  All rights reserved.
 // Use of this source code is governed by a BSD-style
@@ -796,8 +796,19 @@ type UserGuildSettings struct {
 	Muted                bool                                `json:"muted"`
 	MobilePush           bool                                `json:"mobile_push"`
 	MessageNotifications int                                 `json:"message_notifications"`
-	GuildID              string                              `json:"guild_id"`
+	GuildID              interface{}                         `json:"guild_id"`
 	ChannelOverrides     []*UserGuildSettingsChannelOverride `json:"channel_overrides"`
+}
+
+// GetGuildID is a workaround for when the Discord API send an integer instead
+// of sending a string.
+func (settings *UserGuildSettings) GetGuildID() string {
+	asString, ok := settings.GuildID.(string)
+	if ok {
+		return asString
+	}
+
+	return ""
 }
 
 // A UserGuildSettingsEdit stores data for editing UserGuildSettings

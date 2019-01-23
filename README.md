@@ -1,6 +1,6 @@
 # DiscordGo
 
-[![GoDoc](https://godoc.org/github.com/bwmarrin/discordgo?status.svg)](https://godoc.org/github.com/bwmarrin/discordgo) [![Go report](http://goreportcard.com/badge/bwmarrin/discordgo)](http://goreportcard.com/report/bwmarrin/discordgo) [![Build Status](https://travis-ci.org/bwmarrin/discordgo.svg?branch=master)](https://travis-ci.org/bwmarrin/discordgo) [![Discord Gophers](https://img.shields.io/badge/Discord%20Gophers-%23discordgo-blue.svg)](https://discord.gg/0f1SbxBZjYoCtNPP) [![Discord API](https://img.shields.io/badge/Discord%20API-%23go_discordgo-blue.svg)](https://discord.gg/0SBTUU1wZTWT6sqd)
+[![GoDoc](https://godoc.org/github.com/Bios-Marcel/discordgo?status.svg)](https://godoc.org/github.com/Bios-Marcel/discordgo) [![Go report](http://goreportcard.com/badge/Bios-Marcel/discordgo)](http://goreportcard.com/report/Bios-Marcel/discordgo) [![Build Status](https://travis-ci.org/Bios-Marcel/discordgo.svg?branch=master)](https://travis-ci.org/Bios-Marcel/discordgo) [![Discord Gophers](https://img.shields.io/badge/Discord%20Gophers-%23discordgo-blue.svg)](https://discord.gg/0f1SbxBZjYoCtNPP) [![Discord API](https://img.shields.io/badge/Discord%20API-%23go_discordgo-blue.svg)](https://discord.gg/0SBTUU1wZTWT6sqd)
 
 <img align="right" src="http://bwmarrin.github.io/discordgo/img/discordgo.png">
 
@@ -30,7 +30,7 @@ Gophers](https://discord.gg/0f1SbxBZjYq9jLBk) chat server.**
 * The master branch represents the latest released version of DiscordGo.  This
 branch will always have a stable and tested version of the library. Each release
 is tagged and you can easily download a specific release and view release notes
-on the github [releases](https://github.com/bwmarrin/discordgo/releases) page.
+on the github [releases](https://github.com/Bios-Marcel/discordgo/releases) page.
 
 * The develop branch is where all development happens and almost always has
 new features over the master branch.  However breaking changes are frequently
@@ -51,13 +51,13 @@ This assumes you already have a working Go environment, if not please see
 `go get` *will always pull the latest released version from the master branch.*
 
 ```sh
-go get github.com/bwmarrin/discordgo
+go get github.com/Bios-Marcel/discordgo
 ```
 
 If you want to use the develop branch, follow these steps next.
 
 ```sh
-cd $GOPATH/src/github.com/bwmarrin/discordgo
+cd $GOPATH/src/github.com/Bios-Marcel/discordgo
 git checkout develop
 ```
 
@@ -66,7 +66,7 @@ git checkout develop
 Import the package into your project.
 
 ```go
-import "github.com/bwmarrin/discordgo"
+import "github.com/Bios-Marcel/discordgo"
 ```
 
 Construct a new Discord client which can be used to access the variety of 
@@ -88,8 +88,8 @@ The DiscordGo code is fairly well documented at this point and is currently
 the only documentation available.  Both GoDoc and GoWalker (below) present
 that information in a nice format.
 
-- [![GoDoc](https://godoc.org/github.com/bwmarrin/discordgo?status.svg)](https://godoc.org/github.com/bwmarrin/discordgo) 
-- [![Go Walker](http://gowalker.org/api/v1/badge)](https://gowalker.org/github.com/bwmarrin/discordgo) 
+- [![GoDoc](https://godoc.org/github.com/Bios-Marcel/discordgo?status.svg)](https://godoc.org/github.com/Bios-Marcel/discordgo) 
+- [![Go Walker](http://gowalker.org/api/v1/badge)](https://gowalker.org/github.com/Bios-Marcel/discordgo) 
 - Hand crafted documentation coming eventually.
 
 
@@ -98,12 +98,12 @@ that information in a nice format.
 Below is a list of examples and other projects using DiscordGo.  Please submit 
 an issue if you would like your project added or removed from this list. 
 
-- [DiscordGo Examples](https://github.com/bwmarrin/discordgo/tree/master/examples) - A collection of example programs written with DiscordGo
-- [Awesome DiscordGo](https://github.com/bwmarrin/discordgo/wiki/Awesome-DiscordGo) - A curated list of high quality projects using DiscordGo
+- [DiscordGo Examples](https://github.com/Bios-Marcel/discordgo/tree/master/examples) - A collection of example programs written with DiscordGo
+- [Awesome DiscordGo](https://github.com/Bios-Marcel/discordgo/wiki/Awesome-DiscordGo) - A curated list of high quality projects using DiscordGo
 
 ## Troubleshooting
 For help with common problems please reference the 
-[Troubleshooting](https://github.com/bwmarrin/discordgo/wiki/Troubleshooting) 
+[Troubleshooting](https://github.com/Bios-Marcel/discordgo/wiki/Troubleshooting) 
 section of the project wiki.
 
 
