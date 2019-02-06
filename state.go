@@ -371,6 +371,72 @@ func (s *State) Member(guildID, userID string) (*Member, error) {
 	return nil, ErrStateNotFound
 }
 
+// MembersAdd adds all passed members to the cache for the given guild. If
+// needed, the guildID of members will be filled.
+func (s *State) MembersAdd(guildID string, newMembers []*Member) error {
+	if s == nil {
+		return ErrNilState
+	}
+
+	s.RLock()
+	defer s.RUnlock()
+
+	guild, err := s.Guild(guildID)
+	if err != nil {
+		return err
+	}
+
+	members, ok := s.memberMap[guildID]
+	if !ok {
+		return ErrStateNotFound
+	}
+
+	for _, member := range newMembers {
+		if member.GuildID == "" {
+			member.GuildID = guildID
+		}
+
+		m, ok := members[member.User.ID]
+		if !ok {
+			members[member.User.ID] = member
+			guild.Members = append(guild.Members, member)
+		} else {
+			// We are about to replace `m` in the state with `member`, but first we need to
+			// make sure we preserve any fields that the `member` doesn't contain from `m`.
+			if member.JoinedAt == "" {
+				member.JoinedAt = m.JoinedAt
+			}
+			*m = *member
+		}
+	}
+
+	return nil
+}
+
+// Members gets all available members in a guild
+func (s *State) Members(guildID string) ([]*Member, error) {
+	if s == nil {
+		return nil, ErrNilState
+	}
+
+	s.RLock()
+	defer s.RUnlock()
+
+	membersInGuild, ok := s.memberMap[guildID]
+	if !ok {
+		return nil, ErrStateNotFound
+	}
+
+	membersAsArray := make([]*Member, len(membersInGuild))
+	currentIndex := -1
+	for _, member := range membersInGuild {
+		currentIndex++
+		membersAsArray[currentIndex] = member
+	}
+
+	return membersAsArray, nil
+}
+
 // RoleAdd adds a role to the current world state, or
 // updates it if it already exists.
 func (s *State) RoleAdd(guildID string, role *Role) error {
