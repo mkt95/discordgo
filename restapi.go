@@ -158,11 +158,8 @@ func (s *Session) RequestWithLockedBucket(method, urlStr, contentType string, b 
 
 		response, err = s.RequestWithLockedBucket(method, urlStr, contentType, b, s.Ratelimiter.LockBucketObject(bucket), sequence)
 	case http.StatusUnauthorized:
-		if strings.Index(s.Token, "Bot ") != 0 {
-			s.log(LogInformational, ErrUnauthorized.Error())
-			err = ErrUnauthorized
-		}
-		fallthrough
+		s.log(LogInformational, ErrUnauthorized.Error())
+		err = ErrUnauthorized
 	default: // Error condition
 		err = newRestError(req, resp, response)
 	}
