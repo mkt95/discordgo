@@ -662,6 +662,21 @@ type FriendSourceFlags struct {
 	MutualFriends bool `json:"mutual_friends"`
 }
 
+const (
+	// RelationTypeFriend is an external constant for a relationship type
+	// in discordgo.
+	RelationTypeFriend = 1
+	// RelationTypeBlocked is an external constant for a relationship type
+	// in discordgo.
+	RelationTypeBlocked = 2
+	// RelationTypeIncommingRequest is an external constant for a relationship
+	// type in discordgo.
+	RelationTypeIncommingRequest = 3
+	// RelationTypeOutgoingRequest is an external constant for a relationship
+	// type in discordgo.
+	RelationTypeOutgoingRequest = 4
+)
+
 // A Relationship between the logged in user and Relationship.User
 type Relationship struct {
 	User *User  `json:"user"`
