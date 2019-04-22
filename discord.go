@@ -26,25 +26,8 @@ const VERSION = "0.19.0"
 // ErrMFA will be risen by New when the user has 2FA.
 var ErrMFA = errors.New("account has 2FA enabled")
 
-// NewWithToken creates a new Discord session and will automate some startup
-// tasks if given enough information to do so.  Currently you can pass zero
-// arguments and it will return an empty Discord session.
-// There are 3 ways to call New:
-//     With a single auth token - All requests will use the token blindly,
-//         no verification of the token will be done and requests may fail.
-//         IF THE TOKEN IS FOR A BOT, IT MUST BE PREFIXED WITH `BOT `
-//         eg: `"Bot <token>"`
-//     With an email and password - Discord will sign in with the provided
-//         credentials.
-//     With an email, password and auth token - Discord will verify the auth
-//         token, if it is invalid it will sign in with the provided
-//         credentials. This is the Discord recommended way to sign in.
-//
-// NOTE: While email/pass authentication is supported by DiscordGo it is
-// HIGHLY DISCOURAGED by Discord. Please only use email/pass to obtain a token
-// and then use that authentication token for all future connections.
-// Also, doing any form of automation with a user (non Bot) account may result
-// in that account being permanently banned from Discord.
+// NewWithToken creates a new Discord session and will use the given token
+// for authorization.
 func NewWithToken(userAgent, token string) (s *Session, err error) {
 	// Create an empty Session interface.
 	s = &Session{
@@ -69,19 +52,8 @@ func NewWithToken(userAgent, token string) (s *Session, err error) {
 	return s, nil
 }
 
-// NewWithPassword creates a new Discord session and will automate some startup
-// tasks if given enough information to do so.  Currently you can pass zero
-// arguments and it will return an empty Discord session.
-// There are 3 ways to call New:
-//     With a single auth token - All requests will use the token blindly,
-//         no verification of the token will be done and requests may fail.
-//         IF THE TOKEN IS FOR A BOT, IT MUST BE PREFIXED WITH `BOT `
-//         eg: `"Bot <token>"`
-//     With an email and password - Discord will sign in with the provided
-//         credentials.
-//     With an email, password and auth token - Discord will verify the auth
-//         token, if it is invalid it will sign in with the provided
-//         credentials. This is the Discord recommended way to sign in.
+// NewWithPassword creates a new Discord session and will sign in with the
+// provided credentials.
 //
 // NOTE: While email/pass authentication is supported by DiscordGo it is
 // HIGHLY DISCOURAGED by Discord. Please only use email/pass to obtain a token
