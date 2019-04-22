@@ -62,6 +62,10 @@ type Session struct {
 	// Max number of REST API retries
 	MaxRestRetries int
 
+	// UserAgent is the string that will be passed as the user-agent when
+	// sending any rest calls.
+	UserAgent string
+
 	// Status stores the currect status of the websocket connection
 	// this is being tested, may stay, may go away.
 	status int32
