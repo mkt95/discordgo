@@ -1079,3 +1079,37 @@ func (s *State) UserColor(userID, channelID string) int {
 
 	return 0
 }
+
+// Users returns all users available in cache. Since there is no dedicated
+// for users, this accesses all available guild Members and UserChannels.
+func (s *State) Users() ([]*User, error) {
+	if s == nil {
+		return nil, ErrNilState
+	}
+
+	s.RLock()
+	defer s.RUnlock()
+
+	var deduplicatedUsers map[string]*User
+
+	for _, guildMembers := range s.memberMap {
+		for _, member := range guildMembers {
+			deduplicatedUsers[member.User.ID] = member.User
+		}
+	}
+
+	for _, channel := range s.channelMap {
+		if channel.Type == ChannelTypeGroupDM || channel.Type == ChannelTypeDM {
+			for _, user := range channel.Recipients {
+				deduplicatedUsers[user.ID] = user
+			}
+		}
+	}
+
+	users := make([]*User, 0, len(deduplicatedUsers))
+	for _, user := range deduplicatedUsers {
+		users = append(users, user)
+	}
+
+	return users, nil
+}
