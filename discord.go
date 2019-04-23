@@ -29,22 +29,8 @@ var ErrMFA = errors.New("account has 2FA enabled")
 // NewWithToken creates a new Discord session and will use the given token
 // for authorization.
 func NewWithToken(userAgent, token string) (s *Session, err error) {
-	// Create an empty Session interface.
-	s = &Session{
-		State:                  NewState(),
-		Ratelimiter:            NewRatelimiter(),
-		StateEnabled:           true,
-		Compress:               true,
-		ShouldReconnectOnError: true,
-		ShardID:                0,
-		ShardCount:             1,
-		MaxRestRetries:         3,
-		UserAgent:              userAgent,
-		Token:                  token,
-		Client:                 &http.Client{Timeout: (20 * time.Second)},
-		sequence:               new(int64),
-		LastHeartbeatAck:       time.Now().UTC(),
-	}
+	s = createEmptySession(userAgent)
+	s.Token = token
 
 	// The Session is now able to have RestAPI methods called on it.
 	// It is recommended that you now call Open() so that events will trigger.
@@ -61,23 +47,7 @@ func NewWithToken(userAgent, token string) (s *Session, err error) {
 // Also, doing any form of automation with a user (non Bot) account may result
 // in that account being permanently banned from Discord.
 func NewWithPassword(userAgent, username, password string) (s *Session, err error) {
-
-	// Create an empty Session interface.
-	s = &Session{
-		State:                  NewState(),
-		Ratelimiter:            NewRatelimiter(),
-		StateEnabled:           true,
-		Compress:               true,
-		ShouldReconnectOnError: true,
-		ShardID:                0,
-		ShardCount:             1,
-		MaxRestRetries:         3,
-		UserAgent:              userAgent,
-		Client:                 &http.Client{Timeout: (20 * time.Second)},
-		sequence:               new(int64),
-		LastHeartbeatAck:       time.Now().UTC(),
-	}
-
+	s = createEmptySession(userAgent)
 	err = s.Login(username, password)
 	if err != nil || s.Token == "" {
 		if s.MFA {
@@ -92,4 +62,21 @@ func NewWithPassword(userAgent, username, password string) (s *Session, err erro
 	// It is recommended that you now call Open() so that events will trigger.
 
 	return
+}
+
+func createEmptySession(userAgent string) *Session {
+	return &Session{
+		State:                  NewState(),
+		Ratelimiter:            NewRatelimiter(),
+		StateEnabled:           true,
+		Compress:               true,
+		ShouldReconnectOnError: true,
+		ShardID:                0,
+		ShardCount:             1,
+		MaxRestRetries:         3,
+		UserAgent:              userAgent,
+		Client:                 &http.Client{Timeout: (20 * time.Second)},
+		sequence:               new(int64),
+		LastHeartbeatAck:       time.Now().UTC(),
+	}
 }
