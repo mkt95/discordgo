@@ -89,7 +89,6 @@ func (s *Session) RequestWithLockedBucket(method, urlStr, contentType string, b 
 	}
 
 	req.Header.Set("Content-Type", contentType)
-	// TODO: Make a configurable static variable.
 	req.Header.Set("User-Agent", s.UserAgent)
 
 	if s.Debug {
