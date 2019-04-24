@@ -1090,7 +1090,7 @@ func (s *State) Users() ([]*User, error) {
 	s.RLock()
 	defer s.RUnlock()
 
-	var deduplicatedUsers map[string]*User
+	deduplicatedUsers := make(map[string]*User)
 
 	for _, guildMembers := range s.memberMap {
 		for _, member := range guildMembers {
