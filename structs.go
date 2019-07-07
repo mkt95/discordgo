@@ -698,9 +698,20 @@ type TooManyRequests struct {
 
 // A ReadState stores data on the read state of channels.
 type ReadState struct {
-	MentionCount  int    `json:"mention_count"`
-	LastMessageID string `json:"last_message_id"`
-	ID            string `json:"id"`
+	MentionCount  int         `json:"mention_count"`
+	LastMessageID interface{} `json:"last_message_id"`
+	ID            string      `json:"id"`
+}
+
+// GetLastMessageID returns the LastMessageID attribute and returns an empty
+// string in case the Discord API returned a zero to signal an empty string.
+func (readState *ReadState) GetLastMessageID() string {
+	asString, ok := readState.LastMessageID.(string)
+	if ok {
+		return asString
+	}
+
+	return ""
 }
 
 // An Ack is used to ack messages
