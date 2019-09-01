@@ -28,6 +28,7 @@ const (
 	MessageTypeChannelIconChange
 	MessageTypeChannelPinnedMessage
 	MessageTypeGuildMemberJoin
+	MessageTypeUserPremiumGuildSubscription
 	MessageTypeUserPremiumGuildSubscriptionTierOne
 	MessageTypeUserPremiumGuildSubscriptionTierTwo
 	MessageTypeUserPremiumGuildSubscriptionTierThree
