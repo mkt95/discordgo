@@ -2,6 +2,14 @@ package discordgo
 
 import "strings"
 
+type UserPremiumType int
+
+const (
+	UserPremiumTypeNone UserPremiumType = iota
+	UserPremiumTypeNitroClassic
+	UserPremiumTypeNitro
+)
+
 // A User stores all data for an individual Discord user.
 type User struct {
 	// The ID of the user.
@@ -36,6 +44,10 @@ type User struct {
 
 	// Whether the user is a bot.
 	Bot bool `json:"bot"`
+
+	// PremiumType indicates whether the user has Discord Nitro and if
+	// so, which type of Discord Nitro.
+	PremiumType UserPremiumType `json:"premium_type"`
 }
 
 // String returns a unique identifier of the form username#discriminator
