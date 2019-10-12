@@ -2194,6 +2194,18 @@ func (s *Session) RelationshipFriendRequestSend(userID string) (err error) {
 	return
 }
 
+// RelationshipFriendRequestSend sends a friend request to a user.
+// userID: ID of the user.
+func (s *Session) RelationshipFriendRequestSendByNameAndDiscriminator(name string, discriminator int) error {
+	data := struct {
+		Username      string `json:"username"`
+		Discriminator int    `json:"discriminator"`
+	}{name, discriminator}
+
+	_, err := s.Request("POST", EndpointRelationships(), data)
+	return err
+}
+
 // RelationshipFriendRequestAccept accepts a friend request from a user.
 // userID: ID of the user.
 func (s *Session) RelationshipFriendRequestAccept(userID string) (err error) {
