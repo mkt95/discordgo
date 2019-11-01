@@ -179,6 +179,12 @@ func unmarshal(data []byte, v interface{}) error {
 // Functions specific to Discord Sessions
 // ------------------------------------------------------------------------------------------------
 
+type LoginInfo struct {
+	Token  string `json:"token"`
+	MFA    bool   `json:"mfa"`
+	Ticket string `json:"ticket"`
+}
+
 // Login asks the Discord server for an authentication token.
 //
 // NOTE: While email/pass authentication is supported by DiscordGo it is
@@ -186,7 +192,7 @@ func unmarshal(data []byte, v interface{}) error {
 // and then use that authentication token for all future connections.
 // Also, doing any form of automation with a user (non Bot) account may result
 // in that account being permanently banned from Discord.
-func (s *Session) Login(email, password string) (err error) {
+func (s *Session) Login(email, password string) (*LoginInfo, error) {
 
 	data := struct {
 		Email    string `json:"email"`
@@ -195,22 +201,44 @@ func (s *Session) Login(email, password string) (err error) {
 
 	response, err := s.RequestWithBucketID("POST", EndpointLogin, data, EndpointLogin)
 	if err != nil {
-		return
+		return nil, err
 	}
 
-	temp := struct {
-		Token string `json:"token"`
-		MFA   bool   `json:"mfa"`
-	}{}
+	temp := &LoginInfo{}
 
-	err = unmarshal(response, &temp)
+	err = unmarshal(response, temp)
 	if err != nil {
-		return
+		return nil, err
 	}
 
 	s.Token = temp.Token
 	s.MFA = temp.MFA
-	return
+	return temp, nil
+}
+
+func (s *Session) totp(ticket string, code int) (string, error) {
+
+	data := struct {
+		Code          int     `json:"code"`
+		GiftCodeSkuID *string `json:"gift_code_sku_id"`
+		LoginSource   *string `json:"login_source"`
+		Ticket        string  `json:"ticket"`
+	}{
+		Code:   code,
+		Ticket: ticket,
+	}
+
+	response, err := s.RequestWithBucketID("POST", EndpointTotp, data, EndpointTotp)
+	if err != nil {
+		return "", err
+	}
+
+	temp := &struct {
+		Token string `json:"token"`
+	}{}
+
+	err = unmarshal(response, temp)
+	return temp.Token, err
 }
 
 // Register sends a Register request to Discord, and returns the authentication token

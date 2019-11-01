@@ -42,6 +42,8 @@ var (
 
 	EndpointAuth           = EndpointAPI + "auth/"
 	EndpointLogin          = EndpointAuth + "login"
+	EndpointMFA            = EndpointAuth + "mfa/"
+	EndpointTotp           = EndpointMFA + "totp"
 	EndpointLogout         = EndpointAuth + "logout"
 	EndpointVerify         = EndpointAuth + "verify"
 	EndpointVerifyResend   = EndpointAuth + "verify/resend"
