@@ -295,6 +295,8 @@ func (s *Session) TwoFactorEnable(secret, code string) ([]*TFABackupCode, error)
 		return nil, err
 	}
 
+	s.Token = temp.Token
+
 	return temp.BackupCodes, err
 }
 
