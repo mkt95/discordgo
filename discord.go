@@ -88,13 +88,13 @@ func NewWithPassword(userAgent, username, password string) (s *Session, err erro
 // and then use that authentication token for all future connections.
 // Also, doing any form of automation with a user (non Bot) account may result
 // in that account being permanently banned from Discord.
-func NewWithPasswordAndMFA(userAgent, username, password string, mfaToken int) (s *Session, err error) {
+func NewWithPasswordAndMFA(userAgent, username, password, mfaToken string) (s *Session, err error) {
 	s = createEmptySession(userAgent)
 	var loginInfo *LoginInfo
 	loginInfo, err = s.Login(username, password)
 	if err != nil || s.Token == "" {
 		if s.MFA {
-			if mfaToken == 0 {
+			if mfaToken == "" {
 				err = ErrMFA
 			} else {
 				if loginInfo == nil {

@@ -216,10 +216,10 @@ func (s *Session) Login(email, password string) (*LoginInfo, error) {
 	return temp, nil
 }
 
-func (s *Session) totp(ticket string, code int) (string, error) {
+func (s *Session) totp(ticket, code string) (string, error) {
 
 	data := struct {
-		Code          int     `json:"code"`
+		Code          string  `json:"code"`
 		GiftCodeSkuID *string `json:"gift_code_sku_id"`
 		LoginSource   *string `json:"login_source"`
 		Ticket        string  `json:"ticket"`
@@ -242,9 +242,9 @@ func (s *Session) totp(ticket string, code int) (string, error) {
 }
 
 // TwoFactorDisable disables TwoFactorAuthentication for the account.
-func (s *Session) TwoFactorDisable(code int) error {
+func (s *Session) TwoFactorDisable(code string) error {
 	data := struct {
-		Code int `json:"code"`
+		Code string `json:"code"`
 	}{code}
 
 	response, err := s.RequestWithBucketID("POST", EndpointTotpDisable, data, EndpointTotpDisable)
@@ -265,15 +265,15 @@ func (s *Session) TwoFactorDisable(code int) error {
 }
 
 type TFABackupCode struct {
-	Consumed bool `json:"consumed"`
-	Code     int  `json:"code"`
+	Consumed bool   `json:"consumed"`
+	Code     string `json:"code"`
 }
 
 // TwoFactorEnable enables two factor for this account using the given seed.
 // On success, backup codes will be returned, in case the 2fa device was lost.
-func (s *Session) TwoFactorEnable(secret string, code int) ([]*TFABackupCode, error) {
+func (s *Session) TwoFactorEnable(secret, code string) ([]*TFABackupCode, error) {
 	data := struct {
-		Code   int    `json:"code"`
+		Code   string `json:"code"`
 		Secret string `json:"secret"`
 	}{
 		Code:   code,
