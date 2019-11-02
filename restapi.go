@@ -241,6 +241,101 @@ func (s *Session) totp(ticket string, code int) (string, error) {
 	return temp.Token, err
 }
 
+// TwoFactorDisable disables TwoFactorAuthentication for the account.
+func (s *Session) TwoFactorDisable(code int) error {
+	data := struct {
+		Code int `json:"code"`
+	}{code}
+
+	response, err := s.RequestWithBucketID("POST", EndpointTotpDisable, data, EndpointTotpDisable)
+	if err != nil {
+		return err
+	}
+
+	temp := &struct {
+		Token string `json:"token"`
+	}{}
+	err = unmarshal(response, temp)
+	if err == nil {
+		//Downgraded token (MFA Token -> Non-MFA Token)
+		s.Token = temp.Token
+	}
+
+	return err
+}
+
+type TFABackupCode struct {
+	Consumed bool `json:"consumed"`
+	Code     int  `json:"code"`
+}
+
+// TwoFactorEnable enables two factor for this account using the given seed.
+// On success, backup codes will be returned, in case the 2fa device was lost.
+func (s *Session) TwoFactorEnable(secret string, code int) ([]*TFABackupCode, error) {
+	data := struct {
+		Code   int    `json:"code"`
+		Secret string `json:"secret"`
+	}{
+		Code:   code,
+		Secret: secret,
+	}
+
+	response, err := s.RequestWithBucketID("POST", EndpointTotpEnable, data, EndpointTotpEnable)
+	if err != nil {
+		return nil, err
+	}
+
+	temp := &struct {
+		Token       string           `json:"token"`
+		BackupCodes []*TFABackupCode `json:"backup_codes"`
+	}{}
+
+	err = unmarshal(response, temp)
+	if err != nil {
+		return nil, err
+	}
+
+	return temp.BackupCodes, err
+}
+
+// GetTwoFactorBackupCodes returns all backup codes, even the used ones, that
+// can be used to recover your account in case you lost your 2FA device.
+func (s *Session) GetTwoFactorBackupCodes(password string) ([]*TFABackupCode, error) {
+	return s.getTwoFactorBackupCodes(password, false)
+}
+
+// RegenerateTwoFactorBackupCodes generates new backup tokens for the case that
+// you have lost your 2FA devices and returns them.
+func (s *Session) RegenerateTwoFactorBackupCodes(password string) ([]*TFABackupCode, error) {
+	return s.getTwoFactorBackupCodes(password, true)
+}
+
+func (s *Session) getTwoFactorBackupCodes(password string, regenerate bool) ([]*TFABackupCode, error) {
+	data := struct {
+		Password   string `json:"password"`
+		Regenerate bool   `json:"regenerate"`
+	}{
+		Password:   password,
+		Regenerate: regenerate,
+	}
+
+	response, err := s.RequestWithBucketID("POST", EndpointMFACodes, data, EndpointMFACodes)
+	if err != nil {
+		return nil, err
+	}
+
+	temp := &struct {
+		BackupCodes []*TFABackupCode `json:"backup_codes"`
+	}{}
+
+	err = unmarshal(response, temp)
+	if err != nil {
+		return nil, err
+	}
+
+	return temp.BackupCodes, err
+}
+
 // Register sends a Register request to Discord, and returns the authentication token
 // Note that this account is temporary and should be verified for future use.
 // Another option is to save the authentication token external, but this isn't recommended.
