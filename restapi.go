@@ -228,7 +228,7 @@ func (s *Session) totp(ticket, code string) (string, error) {
 		Ticket: ticket,
 	}
 
-	response, err := s.RequestWithBucketID("POST", EndpointTotp, data, EndpointTotp)
+	response, err := s.RequestWithBucketID("POST", EndpointTotpLogin, data, EndpointTotpLogin)
 	if err != nil {
 		return "", err
 	}
