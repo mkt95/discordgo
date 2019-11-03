@@ -259,6 +259,7 @@ func (s *Session) TwoFactorDisable(code string) error {
 	if err == nil {
 		//Downgraded token (MFA Token -> Non-MFA Token)
 		s.Token = temp.Token
+		s.MFA = false
 	}
 
 	return err
@@ -296,6 +297,7 @@ func (s *Session) TwoFactorEnable(secret, code string) ([]*TFABackupCode, error)
 	}
 
 	s.Token = temp.Token
+	s.MFA = true
 
 	return temp.BackupCodes, err
 }
