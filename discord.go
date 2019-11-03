@@ -17,6 +17,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -31,6 +32,7 @@ var ErrMFA = errors.New("account has 2FA enabled")
 func NewWithToken(userAgent, token string) (s *Session, err error) {
 	s = createEmptySession(userAgent)
 	s.Token = token
+	s.MFA = strings.HasPrefix(token, "mfa")
 
 	// The Session is now able to have RestAPI methods called on it.
 	// It is recommended that you now call Open() so that events will trigger.
