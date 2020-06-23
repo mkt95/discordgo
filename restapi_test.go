@@ -9,7 +9,6 @@ import (
 
 // TestChannelMessageSend tests the ChannelMessageSend() function. This should not return an error.
 func TestChannelMessageSend(t *testing.T) {
-
 	if envChannel == "" {
 		t.Skip("Skipping, DG_CHANNEL not set.")
 	}

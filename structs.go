@@ -71,7 +71,7 @@ type Session struct {
 	MaxRestRetries int
 
 	// UserAgent is the string that will be passed as the user-agent when
-	// sending any rest calls.
+	// sending any REST calls.
 	UserAgent string
 
 	// Status stores the currect status of the websocket connection
@@ -93,9 +93,6 @@ type Session struct {
 
 	// The http client used for REST requests
 	Client *http.Client
-
-	// The user agent used for REST APIs
-	UserAgent string
 
 	// Stores the last HeartbeatAck that was recieved (in UTC)
 	LastHeartbeatAck time.Time
