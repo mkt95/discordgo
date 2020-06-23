@@ -38,7 +38,7 @@ var (
 	ErrPruneDaysBounds         = errors.New("the number of days should be more than or equal to 1")
 	ErrGuildNoIcon             = errors.New("guild does not have an icon set")
 	ErrGuildNoSplash           = errors.New("guild does not have a splash set")
-	ErrUnauthorized            = errors.New("HTTP request was unauthorized. This could be because the provided token was not a bot token. Please add \"Bot \" to the start of your token. https://discordapp.com/developers/docs/reference#authentication-example-bot-token-authorization-header")
+	ErrUnauthorized            = errors.New("HTTP request was unauthorized. This could be because the provided token was not a bot token. Please add \"Bot \" to the start of your token. https://discord.com/developers/docs/reference#authentication-example-bot-token-authorization-header")
 )
 
 // Request is the same as RequestWithBucketID but the bucket id is the same as the urlStr
@@ -94,6 +94,7 @@ func (s *Session) RequestWithLockedBucket(method, urlStr, contentType string, b 
 		req.Header.Set("Content-Type", contentType)
 	}
 
+	// TODO: Make a configurable static variable.
 	req.Header.Set("User-Agent", s.UserAgent)
 
 	if s.Debug {
@@ -217,6 +218,7 @@ func (s *Session) Login(email, password string) (*LoginInfo, error) {
 	}
 
 	s.Token = temp.Token
+	s.Identify.Token = temp.Token
 	s.MFA = temp.MFA
 	return temp, nil
 }
@@ -264,6 +266,7 @@ func (s *Session) TwoFactorDisable(code string) error {
 	if err == nil {
 		//Downgraded token (MFA Token -> Non-MFA Token)
 		s.Token = temp.Token
+		s.Identify.Token = temp.Token
 		s.MFA = false
 	}
 
@@ -302,6 +305,7 @@ func (s *Session) TwoFactorEnable(secret, code string) ([]*TFABackupCode, error)
 	}
 
 	s.Token = temp.Token
+	s.Identify.Token = temp.Token
 	s.MFA = true
 
 	return temp.BackupCodes, err
@@ -645,7 +649,7 @@ func (s *Session) UserChannelPermissions(userID, channelID string) (apermissions
 }
 
 // Calculates the permissions for a member.
-// https://support.discordapp.com/hc/en-us/articles/206141927-How-is-the-permission-hierarchy-structured-
+// https://support.discord.com/hc/en-us/articles/206141927-How-is-the-permission-hierarchy-structured-
 func memberPermissions(guild *Guild, channel *Channel, member *Member) (apermissions int) {
 	userID := member.User.ID
 
@@ -1062,6 +1066,8 @@ type GuildChannelCreateData struct {
 	Topic                string                 `json:"topic,omitempty"`
 	Bitrate              int                    `json:"bitrate,omitempty"`
 	UserLimit            int                    `json:"user_limit,omitempty"`
+	RateLimitPerUser     int                    `json:"rate_limit_per_user,omitempty"`
+	Position             int                    `json:"position,omitempty"`
 	PermissionOverwrites []*PermissionOverwrite `json:"permission_overwrites,omitempty"`
 	ParentID             string                 `json:"parent_id,omitempty"`
 	NSFW                 bool                   `json:"nsfw,omitempty"`
@@ -2263,118 +2269,158 @@ func (s *Session) MessageReactionsRemoveAll(channelID, messageID string) error {
 // messageID : The message ID.
 // emojiID   : Either the unicode emoji for the reaction, or a guild emoji identifier.
 // limit    : max number of users to return (max 100)
+<<<<<<< HEAD
 func (s *Session) MessageReactions(channelID, messageID, emojiID string, limit int) (st []*User, err error) {
-	// emoji such as  #⃣ need to have # escaped
-	emojiID = strings.Replace(emojiID, "#", "%23", -1)
-	uri := EndpointMessageReactions(channelID, messageID, emojiID)
+	====== =
+	// beforeID  : If provided all reactions returned will be before given ID.
+	// afterID   : If provided all reactions returned will be after given ID.
+	func(s *Session) MessageReactions(channelID,
+	messageID, emojiID
+	string, limit
+	int, beforeID, afterID
+	string) (st
+	[]*User, err
+	error) {
+		>>>>>>> orginial - master
+		// emoji such as  #⃣ need to have # escaped
+		emojiID = strings.Replace(emojiID, "#", "%23", -1)
+		uri := EndpointMessageReactions(channelID, messageID, emojiID)
 
-	v := url.Values{}
+		v := url.Values{}
 
-	if limit > 0 {
-		v.Set("limit", strconv.Itoa(limit))
-	}
+		if limit > 0 {
+			v.Set("limit", strconv.Itoa(limit))
+		}
 
-	if len(v) > 0 {
-		uri += "?" + v.Encode()
-	}
+		if afterID != "" {
+			v.Set("after", afterID)
+		}
+		if beforeID != "" {
+			v.Set("before", beforeID)
+		}
 
-	body, err := s.RequestWithBucketID("GET", uri, nil, EndpointMessageReaction(channelID, "", "", ""))
-	if err != nil {
+		if len(v) > 0 {
+			uri += "?" + v.Encode()
+		}
+
+		body, err := s.RequestWithBucketID("GET", uri, nil, EndpointMessageReaction(channelID, "", "", ""))
+		if err != nil {
+			return
+		}
+
+		err = unmarshal(body, &st)
 		return
 	}
 
-	err = unmarshal(body, &st)
-	return
-}
+	// ------------------------------------------------------------------------------------------------
+	// Functions specific to user notes
+	// ------------------------------------------------------------------------------------------------
 
-// ------------------------------------------------------------------------------------------------
-// Functions specific to user notes
-// ------------------------------------------------------------------------------------------------
+	// UserNoteSet sets the note for a specific user.
+	func(s *Session) UserNoteSet(userID
+	string, message
+	string) (err
+	error) {
+		data := struct {
+			Note string `json:"note"`
+		}{message}
 
-// UserNoteSet sets the note for a specific user.
-func (s *Session) UserNoteSet(userID string, message string) (err error) {
-	data := struct {
-		Note string `json:"note"`
-	}{message}
-
-	_, err = s.RequestWithBucketID("PUT", EndpointUserNotes(userID), data, EndpointUserNotes(""))
-	return
-}
-
-// ------------------------------------------------------------------------------------------------
-// Functions specific to Discord Relationships (Friends list)
-// ------------------------------------------------------------------------------------------------
-
-// RelationshipsGet returns an array of all the relationships of the user.
-func (s *Session) RelationshipsGet() (r []*Relationship, err error) {
-	body, err := s.RequestWithBucketID("GET", EndpointRelationships(), nil, EndpointRelationships())
-	if err != nil {
+		_, err = s.RequestWithBucketID("PUT", EndpointUserNotes(userID), data, EndpointUserNotes(""))
 		return
 	}
 
-	err = unmarshal(body, &r)
-	return
-}
+	// ------------------------------------------------------------------------------------------------
+	// Functions specific to Discord Relationships (Friends list)
+	// ------------------------------------------------------------------------------------------------
 
-// relationshipCreate creates a new relationship. (I.e. send or accept a friend request, block a user.)
-// relationshipType : 1 = friend, 2 = blocked, 3 = incoming friend req, 4 = sent friend req
-func (s *Session) relationshipCreate(userID string, relationshipType int) (err error) {
-	data := struct {
-		Type int `json:"type"`
-	}{relationshipType}
+	// RelationshipsGet returns an array of all the relationships of the user.
+	func(s *Session) RelationshipsGet()(r
+	[]*Relationship, err
+	error) {
+		body, err := s.RequestWithBucketID("GET", EndpointRelationships(), nil, EndpointRelationships())
+		if err != nil {
+			return
+		}
 
-	_, err = s.RequestWithBucketID("PUT", EndpointRelationship(userID), data, EndpointRelationships())
-	return
-}
+		err = unmarshal(body, &r)
+		return
+	}
 
-// RelationshipFriendRequestSend sends a friend request to a user.
-// userID: ID of the user.
-func (s *Session) RelationshipFriendRequestSend(userID string) (err error) {
-	err = s.relationshipCreate(userID, 4)
-	return
-}
+	// relationshipCreate creates a new relationship. (I.e. send or accept a friend request, block a user.)
+	// relationshipType : 1 = friend, 2 = blocked, 3 = incoming friend req, 4 = sent friend req
+	func(s *Session) relationshipCreate(userID
+	string, relationshipType
+	int) (err
+	error) {
+		data := struct {
+			Type int `json:"type"`
+		}{relationshipType}
 
-// RelationshipFriendRequestSend sends a friend request to a user.
-// userID: ID of the user.
-func (s *Session) RelationshipFriendRequestSendByNameAndDiscriminator(name string, discriminator int) error {
-	data := struct {
+		_, err = s.RequestWithBucketID("PUT", EndpointRelationship(userID), data, EndpointRelationships())
+		return
+	}
+
+	// RelationshipFriendRequestSend sends a friend request to a user.
+	// userID: ID of the user.
+	func(s *Session) RelationshipFriendRequestSend(userID
+	string) (err
+	error) {
+		err = s.relationshipCreate(userID, 4)
+		return
+	}
+
+	// RelationshipFriendRequestSend sends a friend request to a user.
+	// userID: ID of the user.
+	func(s *Session) RelationshipFriendRequestSendByNameAndDiscriminator(name
+	string, discriminator
+	int) error{
+		data := struct{
 		Username      string `json:"username"`
 		Discriminator int    `json:"discriminator"`
 	}{name, discriminator}
 
-	_, err := s.Request("POST", EndpointRelationships(), data)
-	return err
-}
+		_, err := s.Request("POST", EndpointRelationships(), data)
+		return err
+	}
 
-// RelationshipFriendRequestAccept accepts a friend request from a user.
-// userID: ID of the user.
-func (s *Session) RelationshipFriendRequestAccept(userID string) (err error) {
-	err = s.relationshipCreate(userID, 1)
-	return
-}
-
-// RelationshipUserBlock blocks a user.
-// userID: ID of the user.
-func (s *Session) RelationshipUserBlock(userID string) (err error) {
-	err = s.relationshipCreate(userID, 2)
-	return
-}
-
-// RelationshipDelete removes the relationship with a user.
-// userID: ID of the user.
-func (s *Session) RelationshipDelete(userID string) (err error) {
-	_, err = s.RequestWithBucketID("DELETE", EndpointRelationship(userID), nil, EndpointRelationships())
-	return
-}
-
-// RelationshipsMutualGet returns an array of all the users both @me and the given user is friends with.
-// userID: ID of the user.
-func (s *Session) RelationshipsMutualGet(userID string) (mf []*User, err error) {
-	body, err := s.RequestWithBucketID("GET", EndpointRelationshipsMutual(userID), nil, EndpointRelationshipsMutual(userID))
-	if err != nil {
+	// RelationshipFriendRequestAccept accepts a friend request from a user.
+	// userID: ID of the user.
+	func(s *Session) RelationshipFriendRequestAccept(userID
+	string) (err
+	error) {
+		err = s.relationshipCreate(userID, 1)
 		return
 	}
 
-	err = unmarshal(body, &mf)
-	return
-}
+	// RelationshipUserBlock blocks a user.
+	// userID: ID of the user.
+	func(s *Session) RelationshipUserBlock(userID
+	string) (err
+	error) {
+		err = s.relationshipCreate(userID, 2)
+		return
+	}
+
+	// RelationshipDelete removes the relationship with a user.
+	// userID: ID of the user.
+	func(s *Session) RelationshipDelete(userID
+	string) (err
+	error) {
+		_, err = s.RequestWithBucketID("DELETE", EndpointRelationship(userID), nil, EndpointRelationships())
+		return
+	}
+
+	// RelationshipsMutualGet returns an array of all the users both @me and the given user is friends with.
+	// userID: ID of the user.
+	func(s *Session) RelationshipsMutualGet(userID
+	string) (mf
+	[]*User, err
+	error) {
+		body, err := s.RequestWithBucketID("GET", EndpointRelationshipsMutual(userID), nil, EndpointRelationshipsMutual(userID))
+		if err != nil {
+			return
+		}
+
+		err = unmarshal(body, &mf)
+		return
+	}
