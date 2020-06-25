@@ -34,6 +34,9 @@ func NewWithToken(userAgent, token string) (s *Session, err error) {
 	s = createEmptySession(userAgent)
 	s.Token = token
 	s.Identify.Token = token
+	if strings.HasPrefix(s.Token, "Bot") {
+		s.Identify.Intents = MakeIntent(IntentsAllWithoutPrivileged)
+	}
 	s.MFA = strings.HasPrefix(token, "mfa")
 
 	// The Session is now able to have RestAPI methods called on it.
