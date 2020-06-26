@@ -32,11 +32,16 @@ var ErrMFA = errors.New("account has 2FA enabled")
 // for authorization.
 func NewWithToken(userAgent, token string) (s *Session, err error) {
 	s = createEmptySession(userAgent)
-	s.Token = token
-	s.Identify.Token = token
-	if strings.HasPrefix(s.Token, "Bot") {
+	//Make sure there's no unnecessary spaces / newlines from pasting.
+	token = strings.TrimSpace(token)
+	if strings.HasPrefix(strings.ToLower(token), "bot") {
+		//Cut off "bot", ignoring casing and make sure it's "Bot "
+		token = "Bot " + strings.TrimSpace(string([]rune(token)[3:]))
 		s.Identify.Intents = MakeIntent(IntentsAllWithoutPrivileged)
 	}
+
+	s.Token = token
+	s.Identify.Token = token
 	s.MFA = strings.HasPrefix(token, "mfa")
 
 	// The Session is now able to have RestAPI methods called on it.
