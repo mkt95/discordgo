@@ -28,21 +28,27 @@ const VERSION = "0.21.1"
 // ErrMFA will be risen by New when the user has 2FA.
 var ErrMFA = errors.New("account has 2FA enabled")
 
+const fakeBrowserUserAgent = "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:70.0) Gecko/20100101 Firefox/70.0"
+const botUserAgent = "Discord Bot (Bios-Marcel/discordgo)"
+
 // NewWithToken creates a new Discord session and will use the given token
 // for authorization.
-func NewWithToken(userAgent, token string) (s *Session, err error) {
-	s = createEmptySession(userAgent)
+func NewWithToken(token string) (s *Session, err error) {
+	s = createEmptySession()
 	//Make sure there's no unnecessary spaces / newlines from pasting.
 	token = strings.TrimSpace(token)
 	if strings.HasPrefix(strings.ToLower(token), "bot") {
 		//Cut off "bot", ignoring casing and make sure it's "Bot "
 		token = "Bot " + strings.TrimSpace(string([]rune(token)[3:]))
 		s.Identify.Intents = MakeIntent(IntentsAllWithoutPrivileged)
+		s.UserAgent = botUserAgent
+	} else {
+		s.MFA = strings.HasPrefix(token, "mfa")
+		s.UserAgent = fakeBrowserUserAgent
 	}
 
 	s.Token = token
 	s.Identify.Token = token
-	s.MFA = strings.HasPrefix(token, "mfa")
 
 	// The Session is now able to have RestAPI methods called on it.
 	// It is recommended that you now call Open() so that events will trigger.
@@ -50,7 +56,7 @@ func NewWithToken(userAgent, token string) (s *Session, err error) {
 	return s, nil
 }
 
-func createEmptySession(userAgent string) *Session {
+func createEmptySession() *Session {
 	session := &Session{
 		State:                  NewState(),
 		Ratelimiter:            NewRatelimiter(),
@@ -60,7 +66,6 @@ func createEmptySession(userAgent string) *Session {
 		ShardID:                0,
 		ShardCount:             1,
 		MaxRestRetries:         3,
-		UserAgent:              userAgent,
 		Client:                 &http.Client{Timeout: (20 * time.Second)},
 		sequence:               new(int64),
 		LastHeartbeatAck:       time.Now().UTC(),
@@ -86,8 +91,9 @@ func createEmptySession(userAgent string) *Session {
 // and then use that authentication token for all future connections.
 // Also, doing any form of automation with a user (non Bot) account may result
 // in that account being permanently banned from Discord.
-func NewWithPassword(userAgent, username, password string) (s *Session, err error) {
-	s = createEmptySession(userAgent)
+func NewWithPassword(username, password string) (s *Session, err error) {
+	s = createEmptySession()
+	s.UserAgent = fakeBrowserUserAgent
 	_, err = s.Login(username, password)
 	if err != nil || s.Token == "" {
 		if s.MFA {
@@ -110,8 +116,9 @@ func NewWithPassword(userAgent, username, password string) (s *Session, err erro
 // and then use that authentication token for all future connections.
 // Also, doing any form of automation with a user (non Bot) account may result
 // in that account being permanently banned from Discord.
-func NewWithPasswordAndMFA(userAgent, username, password, mfaToken string) (s *Session, err error) {
-	s = createEmptySession(userAgent)
+func NewWithPasswordAndMFA(username, password, mfaToken string) (s *Session, err error) {
+	s = createEmptySession()
+	s.UserAgent = fakeBrowserUserAgent
 	var loginInfo *LoginInfo
 	loginInfo, err = s.Login(username, password)
 	if err != nil || s.Token == "" {
