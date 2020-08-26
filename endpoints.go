@@ -18,53 +18,53 @@ var APIVersion = "6"
 
 // Known Discord API Endpoints.
 var (
-	EndpointStatus     = "https://status.discord.com/api/v2/"
-	EndpointSm         = EndpointStatus + "scheduled-maintenances/"
-	EndpointSmActive   = EndpointSm + "active.json"
-	EndpointSmUpcoming = EndpointSm + "upcoming.json"
+	EndpointStatus     string
+	EndpointSm         string
+	EndpointSmActive   string
+	EndpointSmUpcoming string
 
-	EndpointDiscord    = "https://discord.com/"
-	EndpointAPI        = EndpointDiscord + "api/v" + APIVersion + "/"
-	EndpointGuilds     = EndpointAPI + "guilds/"
-	EndpointChannels   = EndpointAPI + "channels/"
-	EndpointUsers      = EndpointAPI + "users/"
-	EndpointGateway    = EndpointAPI + "gateway"
-	EndpointGatewayBot = EndpointGateway + "/bot"
-	EndpointWebhooks   = EndpointAPI + "webhooks/"
+	EndpointDiscord    string
+	EndpointAPI        string
+	EndpointGuilds     string
+	EndpointChannels   string
+	EndpointUsers      string
+	EndpointGateway    string
+	EndpointGatewayBot string
+	EndpointWebhooks   string
 
-	EndpointCDN             = "https://cdn.discordapp.com/"
-	EndpointCDNAttachments  = EndpointCDN + "attachments/"
-	EndpointCDNAvatars      = EndpointCDN + "avatars/"
-	EndpointCDNIcons        = EndpointCDN + "icons/"
-	EndpointCDNSplashes     = EndpointCDN + "splashes/"
-	EndpointCDNChannelIcons = EndpointCDN + "channel-icons/"
-	EndpointCDNBanners      = EndpointCDN + "banners/"
+	EndpointCDN             string
+	EndpointCDNAttachments  string
+	EndpointCDNAvatars      string
+	EndpointCDNIcons        string
+	EndpointCDNSplashes     string
+	EndpointCDNChannelIcons string
+	EndpointCDNBanners      string
 
-	EndpointAuth           = EndpointAPI + "auth/"
-	EndpointLogin          = EndpointAuth + "login"
-	EndpointTotpLogin      = EndpointAuth + "mfa/totp"
-	EndpointUserMFA        = EndpointUsers + "@me/mfa/"
-	EndpointMFACodes       = EndpointUserMFA + "codes"
-	EndpointTotpEnable     = EndpointUserMFA + "totp/enable"
-	EndpointTotpDisable    = EndpointUserMFA + "totp/disable"
-	EndpointLogout         = EndpointAuth + "logout"
-	EndpointVerify         = EndpointAuth + "verify"
-	EndpointVerifyResend   = EndpointAuth + "verify/resend"
-	EndpointForgotPassword = EndpointAuth + "forgot"
-	EndpointResetPassword  = EndpointAuth + "reset"
-	EndpointRegister       = EndpointAuth + "register"
+	EndpointAuth           string
+	EndpointLogin          string
+	EndpointTotpLogin      string
+	EndpointUserMFA        string
+	EndpointMFACodes       string
+	EndpointTotpEnable     string
+	EndpointTotpDisable    string
+	EndpointLogout         string
+	EndpointVerify         string
+	EndpointVerifyResend   string
+	EndpointForgotPassword string
+	EndpointResetPassword  string
+	EndpointRegister       string
 
-	EndpointVoice        = EndpointAPI + "/voice/"
-	EndpointVoiceRegions = EndpointVoice + "regions"
-	EndpointVoiceIce     = EndpointVoice + "ice"
+	EndpointVoice        string
+	EndpointVoiceRegions string
+	EndpointVoiceIce     string
 
-	EndpointTutorial           = EndpointAPI + "tutorial/"
-	EndpointTutorialIndicators = EndpointTutorial + "indicators"
+	EndpointTutorial           string
+	EndpointTutorialIndicators string
 
-	EndpointTrack        = EndpointAPI + "track"
-	EndpointSso          = EndpointAPI + "sso"
-	EndpointReport       = EndpointAPI + "report"
-	EndpointIntegrations = EndpointAPI + "integrations"
+	EndpointTrack        string
+	EndpointSso          string
+	EndpointReport       string
+	EndpointIntegrations string
 
 	EndpointUser               = func(uID string) string { return EndpointUsers + uID }
 	EndpointUserAvatar         = func(uID, aID string) string { return EndpointCDNAvatars + uID + "/" + aID + ".png" }
@@ -138,7 +138,7 @@ var (
 	EndpointRelationship        = func(uID string) string { return EndpointRelationships() + "/" + uID }
 	EndpointRelationshipsMutual = func(uID string) string { return EndpointUsers + uID + "/relationships" }
 
-	EndpointGuildCreate = EndpointAPI + "guilds"
+	EndpointGuildCreate string
 
 	EndpointInvite = func(iID string) string { return EndpointAPI + "invite/" + iID }
 
@@ -153,3 +153,60 @@ var (
 	EndpointApplicationsBot   = func(aID string) string { return EndpointApplications + "/" + aID + "/bot" }
 	EndpointApplicationAssets = func(aID string) string { return EndpointApplications + "/" + aID + "/assets" }
 )
+
+func init() {
+	SetEndpoints("https://status.discord.com/api/v2/", "https://discord.com/", "https://cdn.discordapp.com/")
+}
+
+// SetEndpoints sets the endpoints for the status, cdn and main communication.
+func SetEndpoints(main, status, cdn string) {
+	EndpointStatus = status
+	EndpointSm = EndpointStatus + "scheduled-maintenances/"
+	EndpointSmActive = EndpointSm + "active.json"
+	EndpointSmUpcoming = EndpointSm + "upcoming.json"
+
+	EndpointDiscord = main
+	EndpointAPI = EndpointDiscord + "api/v" + APIVersion + "/"
+	EndpointGuilds = EndpointAPI + "guilds/"
+	EndpointChannels = EndpointAPI + "channels/"
+	EndpointUsers = EndpointAPI + "users/"
+	EndpointGateway = EndpointAPI + "gateway"
+	EndpointGatewayBot = EndpointGateway + "/bot"
+	EndpointWebhooks = EndpointAPI + "webhooks/"
+
+	EndpointCDN = cdn
+	EndpointCDNAttachments = EndpointCDN + "attachments/"
+	EndpointCDNAvatars = EndpointCDN + "avatars/"
+	EndpointCDNIcons = EndpointCDN + "icons/"
+	EndpointCDNSplashes = EndpointCDN + "splashes/"
+	EndpointCDNChannelIcons = EndpointCDN + "channel-icons/"
+	EndpointCDNBanners = EndpointCDN + "banners/"
+
+	EndpointAuth = EndpointAPI + "auth/"
+	EndpointLogin = EndpointAuth + "login"
+	EndpointTotpLogin = EndpointAuth + "mfa/totp"
+	EndpointUserMFA = EndpointUsers + "@me/mfa/"
+	EndpointMFACodes = EndpointUserMFA + "codes"
+	EndpointTotpEnable = EndpointUserMFA + "totp/enable"
+	EndpointTotpDisable = EndpointUserMFA + "totp/disable"
+	EndpointLogout = EndpointAuth + "logout"
+	EndpointVerify = EndpointAuth + "verify"
+	EndpointVerifyResend = EndpointAuth + "verify/resend"
+	EndpointForgotPassword = EndpointAuth + "forgot"
+	EndpointResetPassword = EndpointAuth + "reset"
+	EndpointRegister = EndpointAuth + "register"
+
+	EndpointVoice = EndpointAPI + "/voice/"
+	EndpointVoiceRegions = EndpointVoice + "regions"
+	EndpointVoiceIce = EndpointVoice + "ice"
+
+	EndpointTutorial = EndpointAPI + "tutorial/"
+	EndpointTutorialIndicators = EndpointTutorial + "indicators"
+
+	EndpointTrack = EndpointAPI + "track"
+	EndpointSso = EndpointAPI + "sso"
+	EndpointReport = EndpointAPI + "report"
+	EndpointIntegrations = EndpointAPI + "integrations"
+
+	EndpointGuildCreate = EndpointAPI + "guilds"
+}
