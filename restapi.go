@@ -1630,6 +1630,53 @@ func (s *Session) ChannelMessageAck(channelID, messageID, lastToken string) (st 
 	return
 }
 
+type bulkAck struct {
+	ReadStates []*bulkAckEntry `json:"read_states"`
+}
+
+type bulkAckEntry struct {
+	ChannelID string `json:"channel_id"`
+	MessageID string `json:"message_id"`
+}
+
+// GuildMessageAck marks all channels in a server as read.
+func (s *Session) GuildMessageAck(guildID string) error {
+	guild, stateError := s.State.Guild(guildID)
+	if stateError != nil {
+		return stateError
+	}
+
+	var acks []*bulkAckEntry
+CHANNEL_LOOP:
+	for _, channel := range guild.Channels {
+		for _, readState := range s.State.Ready.ReadState {
+			//We avoid sending unnecessary acks when we are sure we've
+			//already read a channel.
+			if readState.ID == channel.ID {
+				if readState.LastMessageID == channel.LastMessageID {
+					continue CHANNEL_LOOP
+				}
+
+				//If the readstat is outdated, then we add an entry to the array.
+				break
+			}
+		}
+
+		acks = append(acks, &bulkAckEntry{
+			ChannelID: channel.ID,
+			MessageID: channel.LastMessageID,
+		})
+	}
+
+	// Nothing to tell the server
+	if len(acks) == 0 {
+		return nil
+	}
+
+	_, requestError := s.Request("POST", EndpointReadStatesAckBulk, &bulkAck{acks})
+	return requestError
+}
+
 // ChannelMessageSend sends a message to the given channel.
 // channelID : The ID of a Channel.
 // content   : The message to send.
