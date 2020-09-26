@@ -14,7 +14,7 @@ package discordgo
 import "strconv"
 
 // APIVersion is the Discord API version used for the REST and Websocket API.
-var APIVersion = "8"
+var APIVersion = "6"
 
 // Known Discord API Endpoints.
 var (
@@ -23,15 +23,16 @@ var (
 	EndpointSmActive   string
 	EndpointSmUpcoming string
 
-	EndpointDiscord    string
-	EndpointAPI        string
-	EndpointGuilds     string
-	EndpointChannels   string
-	EndpointUsers      string
-	EndpointGateway    string
-	EndpointGatewayBot string
-	EndpointWebhooks   string
-	EndpointReadStates string
+	EndpointDiscord      string
+	EndpointAPINoVersion string
+	EndpointAPI          string
+	EndpointGuilds       string
+	EndpointChannels     string
+	EndpointUsers        string
+	EndpointGateway      string
+	EndpointGatewayBot   string
+	EndpointWebhooks     string
+	EndpointReadStates   string
 
 	EndpointReadStatesAckBulk string
 
@@ -169,6 +170,7 @@ func SetEndpoints(main, status, cdn string) {
 	EndpointSmUpcoming = EndpointSm + "upcoming.json"
 
 	EndpointDiscord = main
+	EndpointAPINoVersion = EndpointDiscord + "api/v"
 	EndpointAPI = EndpointDiscord + "api/v" + APIVersion + "/"
 	EndpointGuilds = EndpointAPI + "guilds/"
 	EndpointChannels = EndpointAPI + "channels/"
@@ -176,7 +178,7 @@ func SetEndpoints(main, status, cdn string) {
 	EndpointGateway = EndpointAPI + "gateway"
 	EndpointGatewayBot = EndpointGateway + "/bot"
 	EndpointWebhooks = EndpointAPI + "webhooks/"
-	EndpointReadStates = EndpointAPI + "read-states/"
+	EndpointReadStates = EndpointAPINoVersion + "8/read-states/"
 
 	EndpointReadStatesAckBulk = EndpointReadStates + "ack-bulk"
 
