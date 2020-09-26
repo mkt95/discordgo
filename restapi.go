@@ -1662,10 +1662,12 @@ CHANNEL_LOOP:
 			}
 		}
 
-		acks = append(acks, &bulkAckEntry{
-			ChannelID: channel.ID,
-			MessageID: channel.LastMessageID,
-		})
+		if channel.LastMessageID != "" {
+			acks = append(acks, &bulkAckEntry{
+				ChannelID: channel.ID,
+				MessageID: channel.LastMessageID,
+			})
+		}
 	}
 
 	// Nothing to tell the server
