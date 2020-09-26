@@ -159,7 +159,7 @@ var (
 )
 
 func init() {
-	SetEndpoints("https://status.discord.com/api/v2/", "https://discord.com/", "https://cdn.discordapp.com/")
+	SetEndpoints("https://discord.com/", "https://status.discord.com/api/v2/", "https://cdn.discordapp.com/")
 }
 
 // SetEndpoints sets the endpoints for the status, cdn and main communication.
