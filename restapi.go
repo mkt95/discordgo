@@ -541,12 +541,13 @@ func (s *Session) UserChannels() (st []*Channel, err error) {
 // UserChannelCreate creates a new User (Private) Channel with another User
 // recipientID : A user ID for the user to which this channel is opened with.
 func (s *Session) UserChannelCreate(recipientID string) (st *Channel, err error) {
-
 	data := struct {
-		RecipientID string `json:"recipient_id"`
-	}{recipientID}
+		Recipients []string `json:"recipients"`
+	}{
+		Recipients: []string{recipientID},
+	}
 
-	body, err := s.RequestWithBucketID("POST", EndpointUserChannels("@me"), data, EndpointUserChannels(""))
+	body, err := s.RequestWithBucketID("POST", EndpointUserChannelsV8("@me"), data, EndpointUserChannelsV8(""))
 	if err != nil {
 		return
 	}
