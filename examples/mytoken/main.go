@@ -12,15 +12,17 @@ import (
 var (
 	Email    string
 	Password string
+	SecondF  string
 )
 
 func init() {
 
 	flag.StringVar(&Email, "e", "", "Account Email")
 	flag.StringVar(&Password, "p", "", "Account Password")
+	flag.StringVar(&SecondF, "t", "", "MFA OTP")
 	flag.Parse()
 
-	if Email == "" || Password == "" {
+	if Email == "" || Password == "" || SecondF == "" {
 		flag.Usage()
 		os.Exit(1)
 	}
@@ -29,7 +31,7 @@ func init() {
 func main() {
 
 	// Create a new Discord session using the provided login information.
-	dg, err := discordgo.New(Email, Password)
+	dg, err := discordgo.NewWithPasswordAndMFA(Email, Password, SecondF)
 	if err != nil {
 		fmt.Println("error creating Discord session,", err)
 		return
